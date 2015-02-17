@@ -123,12 +123,18 @@ for (var i=0; i<key_count;i++) {
 
 // output the resulting routes
 var count_in = 0
+var no_in_count = 0
+var sinlge_in_count = 0
 for (var i = 0; i<key_count; i++) {
 	console.log(in_neighbours[i]+"-> "+routers[i])
 	count_in+=in_neighbours[i]
+	if (in_neighbours[i] == 0) no_in_count++
+	if (in_neighbours[i] == 1) sinlge_in_count++
 }
 
 // and the statistics
 console.log("Total routes (edges): "+count_in)
 console.log("Total items (nodes): "+routers.length)
+console.log("No routes to: "+no_in_count)
+console.log("A single route to: "+sinlge_in_count)
 console.log("Collisions: "+collision_count)
