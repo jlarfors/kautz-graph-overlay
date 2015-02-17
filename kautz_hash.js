@@ -15,6 +15,7 @@ var k_space = process.argv[5]
 var digit = parseInt(process.argv[6])
 var merge_p = 0
 var hash_algo = 'sha1'
+var digest_type = 'hex'
 var target_base = parseInt(k_space)+1;
 
 // generate kautz-hashes according to the pseudocode algo presented in FIFFIONE
@@ -23,11 +24,10 @@ var to_kautz_string = function(ip, port, out_length, k_space, digit, merge_p) {
 
 	// merge the 0...k-1 to the end of the key, hash it and concat it with the previous
 	var intermediate = key+merge_p
-	var hashed_key = crypto.createHash(hash_algo).update(intermediate).digest()
+	var hashed_key = crypto.createHash(hash_algo).update(intermediate).digest(digest_type)
 	for (merge_p = 1; merge_p<k_space; merge_p++) {
 		intermediate = key+merge_p;
-		var sha1sum = crypto.createHash(hash_algo).update(intermediate)
-		hashed_key = Buffer.concat([hashed_key, sha1sum.digest()])
+		hashed_key += crypto.createHash(hash_algo).update(intermediate).digest(digest_type)
 	}
 
 	// create a kautz-string from previous buffer
@@ -36,14 +36,13 @@ var to_kautz_string = function(ip, port, out_length, k_space, digit, merge_p) {
 		kautz_string = ""
 
 		intermediate = key+merge_p
-		var sha1sum = crypto.createHash(hash_algo).update(intermediate)
-		hashed_key = Buffer.concat([hashed_key, sha1sum.digest()])
+		hashed_key += crypto.createHash(hash_algo).update(intermediate).digest(digest_type)
 		merge_p++
 
-		// convert the hashed-key buffer into the target base
-		for (i=0; i<hashed_key.length;i++) {
-			kautz_string += base(target_base, hashed_key[i], 10)
-		}
+		// convert the hashed-key string from hexadecimal into the target base
+		// there is a limit to how long the hexadecimal string can be, but it
+		// should not be easily reached with this protocol (given long enough strings yes)
+		kautz_string = base(target_base, hashed_key.toUpperCase(), 16)
 
 		kautz_string = kautz_string.substring( (kautz_string.length-1-digit), (kautz_string.length-1) )
 
@@ -88,8 +87,8 @@ function getOutNeighbours(elem, arr, elem_index, in_neighbours) {
 	}
 }
 
-// Number of noes
-var key_count = 1024
+// Number of nodes
+var key_count = 1025
 
 // collect the kautz-hashes into this array
 var arr = []
@@ -110,6 +109,9 @@ arr.sort()
 var in_neighbours = []
 for (var i = 0; i<key_count; i++) in_neighbours[i] = 0
 
+var cutoff_statistic = []
+for (var i = 0; i<out_length;i++) cutoff_statistic[i] = 0
+
 // get routes for each node using the predefined longest postfix matching and collect statistics
 var routers = []
 for (var i=0; i<key_count;i++) {
@@ -118,6 +120,8 @@ for (var i=0; i<key_count;i++) {
 	var router = arr[i] + "-> "
 	var index = getOutNeighbours(arr[i], arr, i, in_neighbours)
 	router+=arr[index[0]]+" ("+index[1]+"), "+arr[index[2]]+" ("+index[3]+")"
+	cutoff_statistic[index[1]]++
+	cutoff_statistic[index[3]]++
 	routers[i] = router
 }
 
@@ -131,6 +135,16 @@ for (var i = 0; i<key_count; i++) {
 	if (in_neighbours[i] == 0) no_in_count++
 	if (in_neighbours[i] == 1) sinlge_in_count++
 }
+
+console.log("\nPrefix-postfix match variance:")
+console.log("1  2  3  4  5  6  7   8   9   10  11  12  13 14 15 16 17 18 19 20")
+console.log(cutoff_statistic[0]+" "+cutoff_statistic[1]+" "+cutoff_statistic[2]
+	+" "+cutoff_statistic[3]+" "+cutoff_statistic[4]+" "+cutoff_statistic[5]
+	+" "+cutoff_statistic[6]+" "+cutoff_statistic[7]+" "+cutoff_statistic[8]
+	+" "+cutoff_statistic[9]+" "+cutoff_statistic[10]+" "+cutoff_statistic[11]
+	+" "+cutoff_statistic[12]+" "+cutoff_statistic[13]+" "+cutoff_statistic[14]
+	+" "+cutoff_statistic[15]+"  "+cutoff_statistic[16]+"  "+cutoff_statistic[17]
+	+"  "+cutoff_statistic[18]+"  "+cutoff_statistic[19]+"\n")
 
 // and the statistics
 console.log("Total routes (edges): "+count_in)
