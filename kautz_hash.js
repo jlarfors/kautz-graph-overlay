@@ -178,6 +178,7 @@ function route(src, dst, arr) {
 	var visited = []
 	var hops = 0
 	while (src != dst) {
+
 		var cutoff = 0
 		var V
 
@@ -188,29 +189,48 @@ function route(src, dst, arr) {
 			return visited
 		}
 
+		function vertexExists(K, L) {
+			var firstIndex = visited.indexOf(K)
+			var lastIndex = visited.lastIndexOf(K)
+			if (firstIndex < 0) return false
+			else return ((visited[firstIndex+1] == L) || (visited[lastIndex+1] == L))
+		}
+
 		while (cutoff<U.length-1) {
 			cutoff++
 			if (routers1[src]) V1 = arr[routers1[src]].slice(0, U.length-cutoff)
 			if (routers2[src]) V2 = arr[routers2[src]].slice(0, U.length-cutoff)
 			var temp_V = W.slice(cutoff, U.length)
-			if (V1 == temp_V) { V = routers1[src]; break }
-			else if (V2 == temp_V) { V = routers2[src]; break }
+			if (V1 == temp_V && !vertexExists(src, routers1[src])) {
+			 	V = routers1[src]
+			 	break
+			}
+			else if (V2 == temp_V && !vertexExists(src, routers2[src])) {
+				V = routers2[src]
+				break
+			}
 		}
-
-		if (V && visited.indexOf(V) < 0) {
+		
+		if (V) {
+			visited[visited.length] = src
 			src = V
 			V = null
-		} else if (visited.indexOf(routers1[src]) < 0) {
+		} else if (!vertexExists(src, routers1[src])) {
+			visited[visited.length] = src
 			src = routers1[src]
-		} else if (visited.indexOf(routers2[src]) < 0) {
+		} else if (!vertexExists(src, routers2[src])) {
+			visited[visited.length] = src
 			src = routers2[src]
 		} else {
+			visited[visited.length] = src
 			visited[visited.length] = "Loop"
 			return visited
 		}
-		visited[visited.length] = src
+
 		if (visited.length > 1000) {
+			visited[visited.length] = src
 			visited[visited.length] = "Long"
+			return visited
 		}
 	}
 	return visited
@@ -232,7 +252,6 @@ for (var j = 0; j<key_count;j++) {
 		var routed = route(j, i, arr)
 		var route_length = routed.length
 		routes_arr[i] = routed
-
 		if (routed[route_length-1] == "Dead") died++
 		else if (routed[route_length-1] == "Loop") looped++
 		else if (routed[route_length-1] == "Long") too_long++
