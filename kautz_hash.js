@@ -110,6 +110,12 @@ var collision_count = 0
 // sort the array for nicer representation (only needed for collision detection)
 arr.sort()
 
+for (i = 0;i<arr.length;i++) {
+	if (i%3==0 || i%4==0) arr.splice(i, 1)
+}
+
+key_count = arr.length
+
 // get an array to count in-neighbours for nodes (initialisation needed)
 var in_neighbours = []
 for (var i = 0; i<key_count; i++) in_neighbours[i] = 0
@@ -123,20 +129,12 @@ var routers2 = []
 for (var i=0; i<key_count;i++) {
 	if (arr[i] == arr[i+1]) collision_count++
 
-	// var router = arr[i] + " -> "
 	var index = getOutNeighbours(arr[i], arr, i, in_neighbours)
-
-	// router+=arr[index[0]]+" "
-	// router+="("+index[1]+"), "
-	// router+=arr[index[2]]+" "
-	// router+="("+index[3]+")"
-
 	routers1[i] = index[0]
 	routers2[i] = index[2]
 
 	cutoff_statistic[index[1]]++
 	cutoff_statistic[index[3]]++
-	// routers[i] = router
 }
 
 // output the resulting routes
