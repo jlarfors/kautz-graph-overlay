@@ -91,19 +91,24 @@ function getOutNeighbours(elem, arr, elem_index, in_neighbours) {
 }
 
 // collect the kautz-hashes into this array
-var arr = []
-var ip_suffix = 0
-for (var keys = 0; keys<key_count; keys++) {
-	arr[keys] = to_kautz_string(ip+ip_suffix, parseInt(port)+keys, out_length, k_space, digit, merge_p)
-	if (ip_suffix%255==0) ip_suffix=0
-	ip_suffix++
-}
+// var arr = []
+// var ip_suffix = 0
+// for (var keys = 0; keys<key_count; keys++) {
+// 	arr[keys] = to_kautz_string(ip+ip_suffix, parseInt(port)+keys, out_length, k_space, digit, merge_p)
+// 	if (ip_suffix%255==0) ip_suffix=0
+// 	ip_suffix++
+// }
+
+var degree = 2
+k_space = 10
+var arr = kautz_generator(degree, k_space)
+key_count = Math.pow(degree, k_space) + Math.pow(degree, k_space-1)
 
 // get some statistics on the collisions to evaluate need for tweaks
 var collision_count = 0
 
 // sort the array for nicer representation (only needed for collision detection)
-// arr.sort()
+arr.sort()
 
 // get an array to count in-neighbours for nodes (initialisation needed)
 var in_neighbours = []
