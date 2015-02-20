@@ -169,6 +169,9 @@ console.log("No route out from: "+no_out_count)
 console.log("A single route out from: "+single_out_count)
 console.log("Collisions: "+collision_count)
 
+
+// The routing algorithm that is modeled after longest postfix-prefix matching
+// just for testing purposes to determine if the resulting network is viable
 function route(src, dst, arr) {
 	var U = arr[src]
 	var W = arr[dst]
@@ -184,15 +187,11 @@ function route(src, dst, arr) {
 			visited[visited.length] = "Dead"
 			return visited
 		}
-		if (routers1[src])
-			V1 = arr[routers1[src]]
-		if (routers2[src])
-			V2 = arr[routers2[src]]
 
 		while (cutoff<U.length-1) {
 			cutoff++
-			if (V1) V1 = V1.slice(0, U.length-cutoff)
-			if (V2) V2 = V2.slice(0, U.length-cutoff)
+			if (routers1[src]) V1 = arr[routers1[src]].slice(0, U.length-cutoff)
+			if (routers2[src]) V2 = arr[routers2[src]].slice(0, U.length-cutoff)
 			var temp_V = W.slice(cutoff, U.length)
 			if (V1 == temp_V) { V = routers1[src]; break }
 			else if (V2 == temp_V) { V = routers2[src]; break }
@@ -217,6 +216,7 @@ function route(src, dst, arr) {
 	return visited
 }
 
+// variables needed to keep track of routes and statistics
 var routes_arr = []
 var looped = 0
 var died = 0
@@ -224,6 +224,7 @@ var completed = 0
 var average = 0
 var too_long = 0
 
+// For each node, get a path from it to every other node
 for (var j = 0; j<key_count;j++) {
 	for (var i = 0; i<key_count;i++) {
 		if (j==i) i++
@@ -238,9 +239,9 @@ for (var j = 0; j<key_count;j++) {
 		else {completed++; average+=route_length}
 	}
 }
-
 average/=completed
 
+// output the statistics
 console.log("Looped: "+looped)
 console.log("Died: "+died)
 console.log("Too long: "+too_long)
