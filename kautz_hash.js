@@ -1,5 +1,6 @@
 var crypto = require('crypto')
 var base = require('anybase')
+var kautz_generator = require('./kautz-permutations.js')
 
 // take in enough parameters
 if (process.argv.length < 7) {
