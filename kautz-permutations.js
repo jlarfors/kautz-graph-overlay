@@ -1,17 +1,7 @@
 var crypto = require('crypto')
 var base = require('anybase')
-var util = require('util')
 
-function kautz_perms(degree, k_space) {
-	// var inputErr = "Usage: kautz-strings <degree> <k_space> <key_count>"
-	// if (process.argv.length < 3) {
-	// 	console.log(inputErr)
-	// 	process.exit()
-	// }
-
-	// var degree = parseInt(process.argv[2])
-	// var k_space = parseInt(process.argv[3])
-
+function kautz_perms(degree, k_space, hash_algo, digest_type) {
 	var key_count = Math.pow(degree, k_space) + Math.pow(degree, k_space-1)
 
 	var strings = []
@@ -19,7 +9,7 @@ function kautz_perms(degree, k_space) {
 	var string_index = 0
 	var input = 0
 	while (strings.length < key_count) {
-		var hash = crypto.createHash('sha256').update(input+"").digest('hex').toUpperCase()
+		var hash = crypto.createHash(hash_algo).update(input+"").digest(digest_type).toUpperCase()
 		var tern = base(degree+1, hash, 16)
 
 		var index
@@ -48,6 +38,6 @@ function kautz_perms(degree, k_space) {
 	return strings
 }
 
-module.exports = function(degree, k_space) {
-	return new kautz_perms(degree, k_space)
+module.exports = function(degree, k_space, hash_algo, digest_type) {
+	return new kautz_perms(degree, k_space, hash_algo, digest_type)
 }
