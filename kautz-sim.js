@@ -26,16 +26,15 @@ var target_base = parseInt(degree)+1
 var arr = []
 
 // use this method for individual strings or the one below for entire k-space permutations
-var ip_suffix = 0
-for (var keys = 0; keys<key_count; keys++) {
-	arr[keys] = kautz_string(ip+ip_suffix, parseInt(port)+keys, out_length, degree, digit, hash_algo, digest_type)
-	if (ip_suffix%255==0) ip_suffix=0
-	ip_suffix++
-}
+// var ip_suffix = 0
+// for (var keys = 0; keys<key_count; keys++) {
+// 	arr[keys] = kautz_string(ip+ip_suffix, parseInt(port)+keys, out_length, degree, digit, hash_algo, digest_type)
+// 	if (ip_suffix%255==0) ip_suffix=0
+// 	ip_suffix++
+// }
 
-// arr = kautz_generator(degree, out_length, hash_algo, digest_type)
-// key_count = Math.pow(degree, out_length) + Math.pow(degree, out_length-1)
-
+arr = kautz_generator(degree, out_length, hash_algo, digest_type)
+key_count = Math.pow(degree, out_length) + Math.pow(degree, out_length-1)
 
 // get some statistics on the collisions to evaluate need for tweaks
 var collision_count = 0
@@ -43,6 +42,7 @@ var collision_count = 0
 // sort the array for nicer representation (only needed for collision detection)
 arr.sort()
 
+// use with permutation generation
 for (i = 0;i<arr.length;i++) {
 	if (i%3==0 || i%4==0) arr.splice(i, 1)
 }
@@ -71,15 +71,15 @@ for (var i=0; i<key_count;i++) {
 }
 
 // output the resulting routes
-var count_in = 0
+var total_routes = 0
 var no_in_count = 0
 var sinlge_in_count = 0
 var no_out_count = 0
 var single_out_count = 0
 for (var i = 0; i<key_count; i++) {
 	// console.log(in_neighbours[i]+"-> "+routers[i])
-	console.log(i+": "+arr[i]+" -> "+out_neighbour_1[i]+": "+arr[out_neighbour_1[i]]+" "+out_neighbour_2[i]+": "+arr[out_neighbour_2[i]])
-	count_in+=in_neighbours[i]
+	// console.log(i+": "+arr[i]+" -> "+out_neighbour_1[i]+": "+arr[out_neighbour_1[i]]+" "+out_neighbour_2[i]+": "+arr[out_neighbour_2[i]])
+	total_routes+=in_neighbours[i]
 	if (in_neighbours[i] == 0) no_in_count++
 	if (in_neighbours[i] == 1) sinlge_in_count++
 	if (!out_neighbour_1[i] && !out_neighbour_2[i]) no_out_count++;
@@ -98,7 +98,7 @@ console.log(cutoff_statistic[0]+" "+cutoff_statistic[1]+" "+cutoff_statistic[2]
 	+"  "+cutoff_statistic[18]+"  "+cutoff_statistic[19]+"\n")
 
 // and the statistics
-console.log("Total routes (edges): "+count_in)
+console.log("Total routes (edges): "+total_routes)
 console.log("Total items (nodes): "+arr.length)
 console.log("No routes to: "+no_in_count)
 console.log("A single route to: "+sinlge_in_count)

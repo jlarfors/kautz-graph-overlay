@@ -4,26 +4,38 @@ function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {
 	var U = arr[src]
 	var W = arr[dst]
 	var visited = []
-	var hops = 0
+
 	while (src != dst) {
 
-		var cutoff = 0
 		var V
-
 		var V1
 		var V2
+
+		// if we arrive at a node with no out-neighbours the route is dead and exit
 		if (!out_neighbour_1[src] && !out_neighbour_2[src]) {
 			visited[visited.length] = "Dead"
 			return visited
 		}
 
+		// check if the route we're about to take has already been taken. we
+		// allow the routing to a node that has been visited, but not a route
+		// that has already been taken as that would entail a loop. Use this
+		// or the one after this for different results
+		// function vertexExists(K, L) {
+		// 	var firstIndex = visited.indexOf(K)
+		// 	var lastIndex = visited.lastIndexOf(K)
+		// 	if (firstIndex < 0) return false
+		// 	else return ((visited[firstIndex+1] == L) || (visited[lastIndex+1] == L))
+		// }
+
+		// an alternative routing mechanism, where we don't allow going to a
+		// node that has been visited. Use this or the previous one
 		function vertexExists(K, L) {
-			var firstIndex = visited.indexOf(K)
-			var lastIndex = visited.lastIndexOf(K)
-			if (firstIndex < 0) return false
-			else return ((visited[firstIndex+1] == L) || (visited[lastIndex+1] == L))
+			return visited.indexOf(K)>-1
 		}
 
+		// check the longest postfix-prefix match
+		var cutoff = 0
 		while (cutoff<U.length-1) {
 			cutoff++
 			if (out_neighbour_1[src]) V1 = arr[out_neighbour_1[src]].slice(0, U.length-cutoff)
@@ -39,6 +51,7 @@ function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {
 			}
 		}
 		
+		// check if there is a match, else go to either of the two out-neighbours
 		if (V) {
 			visited[visited.length] = src
 			src = V
@@ -55,7 +68,8 @@ function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {
 			return visited
 		}
 
-		if (visited.length > 1000) {
+		// end if the route is too long
+		if (visited.length > 100) {
 			visited[visited.length] = src
 			visited[visited.length] = "Long"
 			return visited

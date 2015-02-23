@@ -38,6 +38,4 @@ function kautz_perms(degree, k_space, hash_algo, digest_type) {
 	return strings
 }
 
-module.exports = function(degree, k_space, hash_algo, digest_type) {
-	return new kautz_perms(degree, k_space, hash_algo, digest_type)
-}
+module.exports = kautz_perms
