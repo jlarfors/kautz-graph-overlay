@@ -3,7 +3,8 @@ var base = require('anybase')
 var kautz_generator = require('./kautz-permutations.js')
 var kautz_string = require('./kautz-string.js')
 var getOutNeighbours = require('./kautz-neighbours.js')
-var route = require('./kautz-router.js')
+// var route = require('./kautz-router.js')
+var route = require('./fission-route.js')
 
 // take in enough parameters
 if (process.argv.length < 7) {
@@ -43,9 +44,9 @@ var collision_count = 0
 arr.sort()
 
 // use with permutation generation
-for (i = 0;i<arr.length;i++) {
-	if (i%3==0 || i%4==0) arr.splice(i, 1)
-}
+// for (i = 0;i<arr.length;i++) {
+// 	if (i%3==0 || i%4==0) arr.splice(i, 1)
+// }
 
 key_count = arr.length
 
@@ -78,12 +79,12 @@ var no_out_count = 0
 var single_out_count = 0
 for (var i = 0; i<key_count; i++) {
 	// console.log(in_neighbours[i]+"-> "+routers[i])
-	// console.log(i+": "+arr[i]+" -> "+out_neighbour_1[i]+": "+arr[out_neighbour_1[i]]+" "+out_neighbour_2[i]+": "+arr[out_neighbour_2[i]])
+	console.log(i+": "+arr[i]+" -> "+out_neighbour_1[i]+": "+arr[out_neighbour_1[i]]+" "+out_neighbour_2[i]+": "+arr[out_neighbour_2[i]])
 	total_routes+=in_neighbours[i]
 	if (in_neighbours[i] == 0) no_in_count++
 	if (in_neighbours[i] == 1) sinlge_in_count++
-	if (!out_neighbour_1[i] && !out_neighbour_2[i]) no_out_count++;
-	if (!out_neighbour_1[i] || !out_neighbour_2[i]) single_out_count++;
+	if (out_neighbour_1[i] == undefined && out_neighbour_2[i] == undefined) no_out_count++;
+	if (out_neighbour_1[i] == undefined || out_neighbour_2[i] == undefined) single_out_count++;
 }
 
 // self explanatory
@@ -110,29 +111,43 @@ console.log("Collisions: "+collision_count)
 var routes_arr = []
 var looped = 0
 var died = 0
-var completed = 0
-var average = 0
+var completed_success = 0
+var average_dead = 0
+var average_success = 0
 var too_long = 0
+var max_path = 0
+var min_path = 99
 
 // For each node, get a path from it to every other node
 for (var j = 0; j<key_count;j++) {
+	// j=0
 	for (var i = 0; i<key_count;i++) {
+		// i=512
 		if (j==i) i++
 		if (j >= key_count || i >= key_count) break
 		var routed = route(j, i, arr, out_neighbour_1, out_neighbour_2)
-		var route_length = routed.length
+		var route_length = routed.length-1
 		routes_arr[i] = routed
-		if (routed[route_length-1] == "Dead") died++
-		else if (routed[route_length-1] == "Loop") looped++
-		else if (routed[route_length-1] == "Long") too_long++
-		else {completed++; average+=route_length}
+		if (routed[route_length] == "Dead") {died++;average_dead+=route_length}
+		else if (routed[route_length] == "Loop") looped++
+		else if (routed[route_length] == "Long") too_long++
+		else {
+			completed_success++
+			average_success+=route_length
+			if (max_path < route_length) max_path = route_length
+			if (min_path > route_length) min_path = route_length
+		}
 	}
 }
-average/=completed
+average_success/=completed_success
+average_dead/=died
 
 // output the statistics
 console.log("Looped: "+looped)
 console.log("Died: "+died)
+console.log("Average hops on dead routes: "+average_dead)
 console.log("Too long: "+too_long)
-console.log("Completed: "+completed)
-console.log("Average hops (success): "+average)
+console.log("Completed: "+completed_success)
+console.log("Average hops (success): "+average_success)
+console.log("Maximum path length: "+max_path)
+console.log("Minimum path length: "+min_path)

@@ -12,7 +12,7 @@ function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {
 		var V2
 
 		// if we arrive at a node with no out-neighbours the route is dead and exit
-		if (!out_neighbour_1[src] && !out_neighbour_2[src]) {
+		if (out_neighbour_1[src] == undefined && out_neighbour_2[src] == undefined) {
 			visited[visited.length] = "Dead"
 			return visited
 		}
@@ -38,8 +38,8 @@ function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {
 		var cutoff = 0
 		while (cutoff<U.length-1) {
 			cutoff++
-			if (out_neighbour_1[src]) V1 = arr[out_neighbour_1[src]].slice(0, U.length-cutoff)
-			if (out_neighbour_2[src]) V2 = arr[out_neighbour_2[src]].slice(0, U.length-cutoff)
+			if (out_neighbour_1[src] != undefined) V1 = arr[out_neighbour_1[src]].slice(0, U.length-cutoff)
+			if (out_neighbour_2[src] != undefined) V2 = arr[out_neighbour_2[src]].slice(0, U.length-cutoff)
 			var temp_V = W.slice(cutoff, U.length)
 			if (V1 == temp_V && !vertexExists(src, out_neighbour_1[src])) {
 			 	V = out_neighbour_1[src]
