@@ -1,5 +1,3 @@
-var crypto = require('crypto')
-var base = require('anybase')
 var kautz_generator = require('./kautz-permutations.js')
 var kautz_string = require('./kautz-string.js')
 var getOutNeighbours = require('./kautz-neighbours.js')
@@ -21,7 +19,7 @@ var digit = parseInt(process.argv[6])
 var key_count = parseInt(process.argv[7])
 var hash_algo = 'sha1'
 var digest_type = 'hex'
-var target_base = parseInt(degree)+1
+var origin_base = 16
 
 // collect the kautz-hashes into this array
 var arr = []
@@ -34,7 +32,7 @@ var arr = []
 // 	ip_suffix++
 // }
 
-arr = kautz_generator(degree, out_length, hash_algo, digest_type)
+arr = kautz_generator(degree, out_length, hash_algo, digest_type, origin_base)
 key_count = Math.pow(degree, out_length) + Math.pow(degree, out_length-1)
 
 // get some statistics on the collisions to evaluate need for tweaks
@@ -43,7 +41,7 @@ var collision_count = 0
 // sort the array for nicer representation (only needed for collision detection)
 arr.sort()
 
-// use with permutation generation
+// use with permutation generation, this is modeled to 1024 keys
 // for (i = 0;i<arr.length;i++) {
 // 	if (i%3==0 || i%4==0) arr.splice(i, 1)
 // }
@@ -120,9 +118,7 @@ var min_path = 99
 
 // For each node, get a path from it to every other node
 for (var j = 0; j<key_count;j++) {
-	// j=0
 	for (var i = 0; i<key_count;i++) {
-		// i=512
 		if (j==i) i++
 		if (j >= key_count || i >= key_count) break
 		var routed = route(j, i, arr, out_neighbour_1, out_neighbour_2)
