@@ -28,6 +28,10 @@ var hash_algo = 'sha256'
 var digest_type = 'hex'
 var origin_base = 16
 
+// have some other mechanism for logging on the nodes
+var out = fs.openSync('./out.log', 'a')
+var err = fs.openSync('./err.log', 'a')
+
 // this version uses the generation of the entire kautz-space and assignment thereof
 // the implementation is not valid for arbitrary k-length kautz-strings (identifiers)
 var identifiers = kautz_generator(degree, k_length, hash_algo, digest_type, origin_base)
@@ -79,22 +83,27 @@ for (var i = 0;i < identifiers.length; i++) {
 	getPort(base_port, saveAddress)
 }
 
+// generate a timeout function for each starter with increasing timeout so that node
+// will have time to start all processes, there are many
 function assignIdentifiers() {
-	var out = fs.openSync('./out.log', 'a')
-    var err = fs.openSync('./err.log', 'a')
-
 	for (var i = 0; i < identifiers.length; i++) {
-		var params = '{port: '+ports[i]+
-		' out_1: '+identifiers[out_1[i]]+' '+ports[out_1[i]]+
-		' out_2: '+identifiers[out_2[i]]+' '+ports[out_2[i]]+' }'
+		setTimeout( gen_sterter(i), i*10)
+	}
+
+}
+
+// return a function that does the actual starting of the kautz-node process.
+function gen_sterter(i) {
+	return function() {
+		var params = '{ "port_own": '+ports[i]+', "id_own": "'+identifiers[i]+
+		'", "out_1": "'+identifiers[out_1[i]]+'", "port_1":'+ports[out_1[i]]+
+		', "out_2": "'+identifiers[out_2[i]]+'", "port_2":'+ports[out_2[i]]+' }'
 	 	var child = spawn('node', ['kautz-node.js', params], {
 	   		detached: true,
 		    stdio: [ 'ignore', out, err ]
 	 	})
 	 	child.unref()
 	}
-
-     
 }
 
 
