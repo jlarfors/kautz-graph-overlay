@@ -4,7 +4,6 @@ var route = require('./fission-route.js')
 var net = require('net')
 var exec = require('child_process').exec
 var spawn = require('child_process').spawn
-var portfinder = require('portfinder')
 var async = require('async')
 var fs = require('fs')
 
@@ -21,14 +20,13 @@ var ip = process.argv[2]
 var base_port = parseInt(process.argv[3])
 var degree = parseInt(process.argv[4])
 var k_length = parseInt(process.argv[5])
-portfinder.basePort = base_port
 
 // change these according to your preferences but remember to change the original base as well
 var hash_algo = 'sha256'
 var digest_type = 'hex'
 var origin_base = 16
 
-// have some other mechanism for logging on the nodes
+// have some other mechanism than stdio for logging on the nodes
 var out = fs.openSync('./out.log', 'a')
 var err = fs.openSync('./err.log', 'a')
 
@@ -87,13 +85,12 @@ for (var i = 0;i < identifiers.length; i++) {
 // will have time to start all processes, there are many
 function assignIdentifiers() {
 	for (var i = 0; i < identifiers.length; i++) {
-		setTimeout( gen_sterter(i), i*10)
+		setTimeout( get_starter_function(i), i*10)
 	}
-
 }
 
 // return a function that does the actual starting of the kautz-node process.
-function gen_sterter(i) {
+function get_starter_function(i) {
 	return function() {
 		var params = '{ "port_own": '+ports[i]+', "id_own": "'+identifiers[i]+
 		'", "out_1": "'+identifiers[out_1[i]]+'", "port_1":'+ports[out_1[i]]+
