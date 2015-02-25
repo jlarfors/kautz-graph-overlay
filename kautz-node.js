@@ -24,7 +24,7 @@ var server = net.createServer(function(connection) {
 server.on('error', function(err) {
 	throw err
 })
-sever.listen(own_port)
+server.listen(own_port)
 
 function react(data) {
 	var destination = data.destination
