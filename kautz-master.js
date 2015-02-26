@@ -120,6 +120,9 @@ function get_starter_function(i) {
 		var username = process.env.USER
 
 		exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
+			.on('error', function(err){
+				console.log(err)
+			}).pipe(process.stdout)
 
 	 	// var child = spawn('node', ['kautz-node.js', params], {
 	  //  		detached: true,
