@@ -3,7 +3,17 @@ var fs = require('fs')
 var outFile = fs.openSync('./out.log', 'a')
 var errFile = fs.openSync('./err.log', 'a')
 
-var config = JSON.parse(process.argv[2])
+if (process.argv.length < 3) {
+	logger("Not enought parameters given.")
+	process.exit()
+}
+
+try {
+	var config = JSON.parse(process.argv[2])
+} catch (e) {
+	logger("Invalid JSON format: "+e)
+	process.exit()
+}
 
 if (!config || !config.id || !config.host || !config.port || !config.out1 || !config.out2){
 	logger("Incorrect call: "+process.argv[2])
@@ -124,8 +134,8 @@ function end() {
 }
 
 function logger(err, msg) {
-	if (err) fs.write(errFile, err)
-	else fs.write(outFile, msg)
+	if (err) fs.write(errFile, err+'\n')
+	else fs.write(outFile, msg+'\n')
 }
 
 
