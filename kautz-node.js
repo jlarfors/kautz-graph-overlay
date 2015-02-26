@@ -20,6 +20,9 @@ if (!config || !config.id || !config.host || !config.port || !config.out1 || !co
 	process.exit()
 }
 
+logger(null, config)
+process.exit()
+
 var own_id = config.id
 var own_host = config.host
 var own_port = config.port
