@@ -5,6 +5,7 @@ var net = require('net')
 var spawn = require('child_process').spawn
 var async = require('async')
 var fs = require('fs')
+var exec = require('ssh-exec')
 
 if (process.argv.length < 5) {
 	// console.log("Usage: node kautz-master.js <ip> <base port> <degree> <k-length>")
@@ -133,5 +134,5 @@ function get_starter_function(i) {
 
 
 
-// ssh host 'screen -d -m node kautz-node.js'
+
 

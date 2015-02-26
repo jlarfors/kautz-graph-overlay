@@ -16,13 +16,19 @@ var out_2_port = config.out2.port
 
 var exit_status = 0
 
+var out = fs.openSync('./out.log', 'a')
+var err = fs.openSync('./err.log', 'a')
+
+logger(null, 'success')
+process.exit()
+
 var server = net.createServer(function(connection) {
 	connection.on('data', function(data_in) {
 		if (data_in.toString('ascii', 0, data_in.length-2) == 'STOP') sendExit()
 		var data = JSON.parse(data_in)
-		if (data == undefined) console.error("Erroneous data: "+data_in)
+		if (data == undefined) logger("Erroneous data: "+data_in)
 		else if (data.destination == own_id) {
-			console.log("Reached destination "+data)
+			logger(null, "Reached destination "+data)
 		} else {
 			react(data)
 		}
@@ -63,7 +69,7 @@ function react(data) {
 		host = out_2_host
 		port = out_2_port
 	} else {
-		console.log("Destination unreachable: dead path")
+		logger(null, "Destination unreachable: dead path "+data)
 		return
 	}
 	data.pathLength++
@@ -85,7 +91,7 @@ function sendMsg(data, host, port) {
 		client.write(JSON.stringify(data))
 		client.end()
 	}).on('error', function() { 
-		console.error("Unable to send event to "+host+":"+port+", with data: "+data)
+		logger("Unable to send event to "+host+":"+port+", with data: "+data)
 	})
 }
 
@@ -96,7 +102,7 @@ function sendExit() {
 		exit_status++
 		setTimeout(end, 5000)
 	}).on('error', function() {
-		console.log("Unable to end session on "+out_1_host+""+err)
+		logger(null, "Unable to end session on "+out_1_host+""+err)
 	})
 	var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
 		client.write('End')
@@ -104,7 +110,7 @@ function sendExit() {
 		exit_status++
 		setTimeout(end, 5000)
 	}).on('error', function() {
-		console.log("Unable to end session on "+out_2_host+""+err)
+		logger(null, "Unable to end session on "+out_2_host+""+err)
 	})
 }
 
@@ -115,7 +121,10 @@ function end() {
 	}
 }
 
-
+function logger(err, msg) {
+	if (err) err.write(err)
+	else out.write(msg)
+}
 
 
 
