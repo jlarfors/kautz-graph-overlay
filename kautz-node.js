@@ -115,7 +115,7 @@ function sendExit() {
 }
 
 function end() {
-	if (exit_status 0==2) {
+	if (exit_status==2) {
 		server.close()
 		process.exit()
 	}
