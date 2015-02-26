@@ -1,7 +1,15 @@
 var net = require('net')
 var fs = require('fs')
+var outFile = fs.openSync('./out.log', 'a')
+var errFile = fs.openSync('./err.log', 'a')
 
 var config = JSON.parse(process.argv[2])
+
+if (!config || !config.id || !config.host || !config.port || !config.out1 || !config.out2){
+	logger("Incorrect call: "+process.argv[2])
+	process.exit()
+}
+
 var own_id = config.id
 var own_host = config.host
 var own_port = config.port
@@ -15,12 +23,6 @@ var out_2_host = config.out2.host
 var out_2_port = config.out2.port
 
 var exit_status = 0
-
-var out = fs.openSync('./out.log', 'a')
-var err = fs.openSync('./err.log', 'a')
-
-logger(null, 'success')
-process.exit()
 
 var server = net.createServer(function(connection) {
 	connection.on('data', function(data_in) {
