@@ -30,8 +30,8 @@ var digest_type = 'hex'
 var origin_base = 16
 
 // have some other mechanism than stdio for logging on the nodes
-var out = fs.openSync('~/kautz-graph-overlay/out.log', 'a')
-var err = fs.openSync('~/kautz-graph-overlay/err.log', 'a')
+// var out = fs.openSync('~/kautz-graph-overlay/out.log', 'a')
+// var err = fs.openSync('~/kautz-graph-overlay/err.log', 'a')
 
 // this version uses the generation of the entire kautz-space and assignment thereof
 // the implementation is not valid for arbitrary k-length kautz-strings (identifiers)
