@@ -117,11 +117,15 @@ function get_starter_function(i) {
 		own.out2 = out2
 
 		params = JSON.stringify(own)
-	 	var child = spawn('node', ['kautz-node.js', params], {
-	   		detached: true,
-		    stdio: [ 'ignore', out, err ]
-	 	})
-	 	child.unref()
+		var username = process.env.USER
+
+		exec('node kautz-node.js '+params, username+'@'+ownS.host)
+
+	 	// var child = spawn('node', ['kautz-node.js', params], {
+	  //  		detached: true,
+		 //    stdio: [ 'ignore', out, err ]
+	 	// })
+	 	// child.unref()
 
 	 	if (i == identifiers.length-1) console.log("Network is up: \n", ports)
 	}

@@ -124,8 +124,8 @@ function end() {
 }
 
 function logger(err, msg) {
-	if (err) err.write(err)
-	else out.write(msg)
+	if (err) fs.write(errFile, err)
+	else fs.write(outFile, msg)
 }
 
 
