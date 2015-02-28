@@ -23,7 +23,7 @@ if (!config || !config.id || !config.host || !config.port || !config.out1 || !co
 	process.exit()
 }
 
-logger(null, config)
+logger(null, JSON.stringify(config))
 process.exit()
 
 var own_id = config.id
