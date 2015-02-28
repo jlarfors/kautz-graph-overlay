@@ -61,6 +61,7 @@ var timedoutconnections = 0
 
 // do it for all the identifiers at this point
 for (var i = 0;i < identifiers.length; i++) {
+	timeouts[i] = 0
 	var host = hosts[i%hosts.length]
 	getPort(host, base_port+port_incrementor, saveAddress)
 	port_incrementor++
@@ -138,7 +139,7 @@ function get_starter_function(i) {
 				}
 
 			}).pipe(process.stdout)
-
+			check_network(i)
 	 	}
 }
 
@@ -147,7 +148,7 @@ function get_starter_function(i) {
 function check_network(i) {
 	if (i < identifiers.length-1) return
 
-	console.log("Network is up: ", ports)
+	console.log(ports, "Network is up!")
 	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing\
 		for missing clients, you may be able to set them up manually. Count: "+timedoutconnections)
 }
