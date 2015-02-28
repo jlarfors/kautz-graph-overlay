@@ -62,19 +62,11 @@ for (var i = 0;i < identifiers.length; i++) {
 	port_incrementor++
 }
 
+// try to establish a connection to a port. if no connection was made
+// the callback is called with the ECONNRESUFED error and the port
+// will be marked as available into the ports array. If there was
+// a connection the callback is called with a generic error string
 function getPort(host, port, callback){
-	// var server = net.createServer()
-	// // server.ports = ports
-	// server.portIndex = port_incrementor
-	// port_incrementor++
-	// server.on('error', function(){
-	// 	callback("Port reserved")
-	// })
-	// server.on('listening', function() {
-	// 	callback(null, this.address())
-	// 	this.close()
-	// })
-	// server.listen(port+server.portIndex)
 	var address = {host:host, port:port}
 	var client = net.connect(address, function() {
 		client.end()
@@ -84,7 +76,9 @@ function getPort(host, port, callback){
 	})
 }
 
-// callback to call on finding out something about the port
+// callback to call on finding out something about the port. On a
+// ECONNREFUSED error mark the port as available, else try again
+// on a different port.
 function saveAddress(error, address) {
 	if (error.code == 'ECONNREFUSED') {
 		ports.push(address)
@@ -130,7 +124,7 @@ function get_starter_function(i) {
 	 	// })
 	 	// child.unref()
 
-	 	if (i == identifiers.length-1) console.log("Network is up: \n", ports)
+	 	// if (i == identifiers.length-1) console.log("Network is up: \n", ports)
 	}
 }
 
