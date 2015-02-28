@@ -127,15 +127,15 @@ function get_starter_function(i) {
 
 		exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
 			.on('error', function(err){
-				if ( err.code == 'ETIMEDOUT' && timeouts[i] < 5 ) {
+				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
-					setTimeout(get_starter_function(i), i*20)
+					setTimeout(get_starter_function(i), i*50)
 				} else if ( timeouts[i] == 5 ) {
 					timedoutconnections++;
 					ports[i].TIMEDOUT = true
 					console.log("Too many timeouts on: "+params )
 				} else {
-					console.log("The error is actually: "+err)
+					console.log("ERROR: "+err)
 				}
 			}).pipe(process.stdout)
 			check_network(i)
