@@ -3,8 +3,8 @@ var fs = require('fs')
 var outFile = fs.openSync('./out.log', 'a')
 var errFile = fs.openSync('./err.log', 'a')
 
-console.log(process.argv)
-process.exit()
+// console.log(process.argv)
+// process.exit()
 
 if (process.argv.length < 3) {
 	logger("Not enought parameters given.")
