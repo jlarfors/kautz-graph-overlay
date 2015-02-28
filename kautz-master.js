@@ -129,7 +129,7 @@ function get_starter_function(i) {
 			.on('error', function(err){
 				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
-					setTimeout(get_starter_function(i), i*50)
+					setTimeout(get_starter_function(i), i*100)
 				} else if ( timeouts[i] == 5 ) {
 					timedoutconnections++;
 					ports[i].TIMEDOUT = true
@@ -145,9 +145,9 @@ function get_starter_function(i) {
 
 // checks if we can tell something about the state of the network.
 function check_network(i) {
-	if (i < identifiers.length-1) return
-
-	console.log(ports, "Network is up!")
+	if (i == identifiers.length-1)
+		console.log(ports, "Network is up!")
+	
 	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing\
 		for missing clients, you may be able to set them up manually. Count: "+timedoutconnections)
 }
