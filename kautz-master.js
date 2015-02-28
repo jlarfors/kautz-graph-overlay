@@ -113,12 +113,12 @@ function get_starter_function(i) {
 		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		console.log(params)
+		// console.log(params)
 
-		// exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
-		// 	.on('error', function(err){
-		// 		console.log(err)
-		// 	}).pipe(process.stdout)
+		exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
+			.on('error', function(err){
+				console.log(err)
+			}).pipe(process.stdout)
 
 	 	// var child = spawn('node', ['kautz-node.js', params], {
 	  //  		detached: true,
