@@ -127,8 +127,8 @@ function get_starter_function(i) {
 
 		var child = spawn('ssh', [host, 'node', 'kautz-graph-overlay/kautz-intermediate.js', i, params])
 
-		child.stdout.on('data', function(data) {console.log(data)})
-		child.stderr.on('data', function(data) {console.log(data)})
+		child.stdout.on('data', function(data) {console.log(data.toString())})
+		child.stderr.on('data', function(data) {console.log(data.toString())})
 
 		// exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+i+' '+params, username+'@'+own.host)
 		// 	.on('error', function(err){
