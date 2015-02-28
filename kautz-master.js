@@ -148,7 +148,7 @@ function check_network(i) {
 	if (i < identifiers.length-1) return
 
 	console.log("Network is up: ", ports)
-	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing
+	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing\
 		for missing clients, you may be able to set them up manually. Count: "+timedoutconnections)
 }
 
