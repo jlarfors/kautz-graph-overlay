@@ -129,7 +129,7 @@ function get_starter_function(i) {
 			.on('error', function(err){
 				if ( err.code == 'ETIMEDOUT' && timeouts[i] < 5 ) {
 					timeouts[i]++
-					setTimeout(get_starter_function(i), i*10)
+					setTimeout(get_starter_function(i), i*20)
 				} else if ( timeouts[i] == 5 ) {
 					timedoutconnections++;
 					ports[i].TIMEDOUT = true
@@ -137,7 +137,6 @@ function get_starter_function(i) {
 				} else {
 					console.log("The error is actually: "+err)
 				}
-
 			}).pipe(process.stdout)
 			check_network(i)
 	 	}
