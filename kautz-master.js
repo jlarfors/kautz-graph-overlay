@@ -7,7 +7,7 @@ var async = require('async')
 var fs = require('fs')
 var exec = require('ssh-exec')
 
-if (process.argv.length < 5) {
+if (process.argv.length < 6) {
 	// console.log("Usage: node kautz-master.js <ip> <base port> <degree> <k-length>")
 	console.log("Usage: node kautz-master.js <base port> <degree> <k-length> <host1> ... <hostN>")
 	process.exit(1)
@@ -110,13 +110,15 @@ function get_starter_function(i) {
 		own.out1 = out1
 		own.out2 = out2
 
-		params = JSON.stringify(own)
+		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
-			.on('error', function(err){
-				console.log(err)
-			}).pipe(process.stdout)
+		console.log(params)
+
+		// exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
+		// 	.on('error', function(err){
+		// 		console.log(err)
+		// 	}).pipe(process.stdout)
 
 	 	// var child = spawn('node', ['kautz-node.js', params], {
 	  //  		detached: true,
@@ -124,7 +126,7 @@ function get_starter_function(i) {
 	 	// })
 	 	// child.unref()
 
-	 	// if (i == identifiers.length-1) console.log("Network is up: \n", ports)
+	 	if (i == identifiers.length-1) console.log("Network is up: \n")
 	}
 }
 
