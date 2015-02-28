@@ -135,7 +135,7 @@ function get_starter_function(i) {
 					ports[i].TIMEDOUT = true
 					console.log("Too many timeouts on: "+params )
 				} else {
-					console.log(err.code)
+					console.log("The error is actually: "+err)
 				}
 
 			}).pipe(process.stdout)
