@@ -1,7 +1,7 @@
 var fs = require('fs'),
      spawn = require('child_process').spawn,
-     out = fs.open('./out.log', 'a'),
-     err = fs.open('./err.log', 'a');
+     out = fs.openSync('./out.log', 'a'),
+     err = fs.openSync('./err.log', 'a');
 
 if (process.argv.length < 3) console.log("Not enough parameters given.")
 

@@ -1,10 +1,11 @@
 var net = require('net')
 var fs = require('fs')
-var outFile = fs.open('./out.log', 'a')
-var errFile = fs.open('./err.log', 'a')
+// var outFile = fs.open('./out.log', 'a')
+// var errFile = fs.open('./err.log', 'a')
 
 if (process.argv.length < 3) {
-	logger("Not enought parameters given.")
+	// logger("Not enought parameters given.")
+	console.log("Not enought parameters given.")
 	process.exit()
 }
 
@@ -13,7 +14,8 @@ if (process.argv.length < 3) {
 try {
 	var config = JSON.parse(process.argv[2])
 } catch (e) {
-	logger("Invalid JSON format: "+e)
+	// logger("Invalid JSON format: "+e)
+	console.error("Invalid JSON format: "+e)
 	process.exit()
 }
 
@@ -21,11 +23,13 @@ try {
 // check that we got a proper configuration, that no important pieces are missing
 // does not actually check the validity of the fields.
 if (!config || !config.id || !config.host || !config.port || !config.out1 || !config.out2){
-	logger("Incorrect call: "+process.argv[2])
+	// logger("Incorrect call: "+process.argv[2])
+	console.error("Incorrect call: "+process.argv[2])
 	process.exit()
 }
 
-logger(null, JSON.stringify(config))
+// logger(null, JSON.stringify(config))
+console.log(JSON.stringify(config))
 process.exit()
 
 var own_id = config.id
@@ -51,7 +55,8 @@ var server = net.createServer(function(connection) {
 		var data = JSON.parse(data_in)
 		if (data == undefined) logger("Erroneous data: "+data_in)
 		else if (data.destination == own_id) {
-			logger(null, "Reached destination "+data)
+			// logger(null, "Reached destination "+data)
+			console.log("Reached destination "+data)
 		} else {
 			react(data)
 		}
@@ -97,7 +102,8 @@ function react(data) {
 		host = out_2_host
 		port = out_2_port
 	} else {
-		logger(null, "Destination unreachable: dead path "+data)
+		// logger(null, "Destination unreachable: dead path "+data)
+		console.log("Destination unreachable: dead path "+data)
 		return
 	}
 	data.pathLength++
@@ -126,7 +132,8 @@ function sendMsg(data, host, port) {
 		client.write(JSON.stringify(data))
 		client.end()
 	}).on('error', function() { 
-		logger("Unable to send event to "+host+":"+port+", with data: "+data)
+		// logger("Unable to send event to "+host+":"+port+", with data: "+data)
+		console.error("Unable to send event to "+host+":"+port+", with data: "+data)
 	})
 }
 
@@ -141,7 +148,8 @@ function sendExit() {
 		exit_status++
 		setTimeout(end, 5000)
 	}).on('error', function() {
-		logger(null, "Unable to end session on "+out_1_host+""+err)
+		// logger(null, "Unable to end session on "+out_1_host+""+err)
+		console.log("Unable to end session on "+out_1_host+""+err)
 	})
 	var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
 		client.write('End')
@@ -149,7 +157,8 @@ function sendExit() {
 		exit_status++
 		setTimeout(end, 5000)
 	}).on('error', function() {
-		logger(null, "Unable to end session on "+out_2_host+""+err)
+		// logger(null, "Unable to end session on "+out_2_host+""+err)
+		console.log("Unable to end session on "+out_2_host+""+err)
 	})
 }
 

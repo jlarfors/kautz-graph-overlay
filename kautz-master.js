@@ -126,7 +126,6 @@ function get_starter_function(i) {
 
 		exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+params, username+'@'+own.host)
 			.on('error', function(err){
-				console.log("Got error: "+err)
 				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
 					setTimeout(get_starter_function(i), i*100)
