@@ -23,8 +23,6 @@ if (!config || !config.id || !config.host || !config.port || !config.out1 || !co
 	process.exit()
 }
 
-console.log(JSON.stringify(config))
-process.exit()
 
 var own_id = config.id
 var own_host = config.host
@@ -161,12 +159,7 @@ function end() {
 }
 
 
-// a function to provide logging to an outise file, as no commangin terminal
-// will be attached to this process in the listening mode.
-function logger(err, msg) {
-	if (err) fs.write(errFile, err+'\n')
-	else fs.write(outFile, msg+'\n')
-}
+
 
 
 

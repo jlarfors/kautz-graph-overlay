@@ -4,7 +4,6 @@ var route = require('./fission-route.js')
 var net = require('net')
 var async = require('async')
 var fs = require('fs')
-var exec = require('ssh-exec')
 var spawn = require('child_process').spawn
 
 if (process.argv.length < 6) {
@@ -96,25 +95,24 @@ function saveAddress(error, address) {
 }
 
 
-// generate a timeout function for each starter with increasing timeout so that node
-// will have time to start all processes, there are many
+// have a range array for the indexes. in a limited fashion send at most
+// 50 intermediates, so as not to overload the ssh daemon at an ukkonode.
+var range = []
 function assignIdentifiers() {
 	for (var i = 0; i < identifiers.length; i++) {
 		ports[i].id = identifiers[i]
-		ports[out_1[i]].id = identifiers[i]
-		ports[out_2[i]].id = identifiers[i]
-		setTimeout(get_starter_function(i), i*20)
+		range.push(i)
 	}
+	async.eachLimit(range, 50, function(i, callback){
+		intermediateSendoff(i, callback)
+	} function() {
+		console.log(ports, "Network is up! Connect to any node via telnet.")
+	})
 }
 
 
-// return a function that does the actual starting of the kautz-node process.
-// the function will execute the node process with the kautz-node.js and related
-// parameters over ssh. For this to work properly the account must have a priv/pub
-// keypair active, and the private key must be unlocked (i.e. no user intervention
-// is tolerated when issuin ssh execution)
-function get_starter_function(i) {
-	return function() {
+// Send off the intermediate process via regular ssh child process spawning
+function intermediateSendoff(i, callback) {
 		var ownS = JSON.stringify(ports[i])
 		var out1 = ports[out_1[i]]
 		var out2 = ports[out_2[i]]
@@ -126,41 +124,16 @@ function get_starter_function(i) {
 		var username = process.env.USER
 
 		var child = spawn('ssh', [host, 'node', 'kautz-graph-overlay/kautz-intermediate.js', i, params])
-
-		child.stdout.on('data', function(data) {console.log(data.toString())})
-		child.stderr.on('data', function(data) {console.log(data.toString())})
-
-		// exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+i+' '+params, username+'@'+own.host)
-		// 	.on('error', function(err){
-		// 		if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
-		// 			timeouts[i]++
-		// 			console.log("Sendoff timed out, trying again.")
-		// 			setTimeout(get_starter_function(i), i*100)
-		// 		} else if (err == 'Error: connect EAGAIN') {
-		// 			console.log("Authentication error, trying again: "+params)
-		// 			setTimeout(get_starter_function(i), i*200)
-		// 		} else if ( timeouts[i] == 5 ) {
-		// 			timedoutconnections++;
-		// 			console.log("Sendoff failed: "+params)
-		// 			ports[i].TIMEDOUT = true
-		// 			console.log("Too many timeouts on: "+params )
-		// 		} else {
-		// 			console.log("ERROR: "+err)
-		// 		}
-		// 	}).pipe(process.stdout)
-		// 	check_network(i)
-	 }
+		child.on('error', function(err){console.log("child error: "+i+err)})
+		child.on('close', function(code, signal) { callback() })
+		child.stdout.on('data', function(data){console.log(data.toString())})
+		child.stderr.on('data', function(data){console.error(data.toString())})
 }
 
 
-// checks if we can tell something about the state of the network.
-function check_network(i) {
-	if (i == identifiers.length-1)
-		console.log(ports, "Network is up!")
 
-	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing\
-		for missing clients, you may be able to set them up manually. Count: "+timedoutconnections)
-}
+
+
 
 
 
