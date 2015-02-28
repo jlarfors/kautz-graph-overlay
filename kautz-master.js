@@ -102,7 +102,7 @@ function assignIdentifiers() {
 		ports[i].id = identifiers[i]
 		ports[out_1[i]].id = identifiers[i]
 		ports[out_2[i]].id = identifiers[i]
-		setTimeout(get_starter_function(i), i*10)
+		setTimeout(get_starter_function(i), i*20)
 	}
 }
 
