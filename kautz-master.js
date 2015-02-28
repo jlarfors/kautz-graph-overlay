@@ -129,6 +129,9 @@ function get_starter_function(i) {
 				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
 					setTimeout(get_starter_function(i), i*100)
+				} else if (err == 'Error: connect EAGAIN') {
+					console.log("Authentication error, trying again.")
+					setTimeout(get_starter_function(i), i*200)
 				} else if ( timeouts[i] == 5 ) {
 					timedoutconnections++;
 					ports[i].TIMEDOUT = true
