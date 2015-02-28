@@ -5,6 +5,7 @@ var net = require('net')
 var async = require('async')
 var fs = require('fs')
 var exec = require('ssh-exec')
+var spawn = require('child_process').spawn
 
 if (process.argv.length < 6) {
 	console.log("Usage: node kautz-master.js <base port> <degree> <k-length> <host1> ... <hostN>")
@@ -124,26 +125,31 @@ function get_starter_function(i) {
 		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+i+' '+params, username+'@'+own.host)
-			.on('error', function(err){
-				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
-					timeouts[i]++
-					console.log("Sendoff timed out, trying again.")
-					setTimeout(get_starter_function(i), i*100)
-				} else if (err == 'Error: connect EAGAIN') {
-					console.log("Authentication error, trying again: "+params)
-					setTimeout(get_starter_function(i), i*200)
-				} else if ( timeouts[i] == 5 ) {
-					timedoutconnections++;
-					console.log("Sendoff failed: "+params)
-					ports[i].TIMEDOUT = true
-					console.log("Too many timeouts on: "+params )
-				} else {
-					console.log("ERROR: "+err)
-				}
-			}).pipe(process.stdout)
-			check_network(i)
-	 	}
+		var child = spawn('ssh', [host, 'node', 'kautz-graph-overlay/kautz-intermediate.js', i, params])
+
+		child.stdout.on('data', function(data) {console.log(data)})
+		child.stderr.on('data', function(data) {console.log(data)})
+
+		// exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+i+' '+params, username+'@'+own.host)
+		// 	.on('error', function(err){
+		// 		if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
+		// 			timeouts[i]++
+		// 			console.log("Sendoff timed out, trying again.")
+		// 			setTimeout(get_starter_function(i), i*100)
+		// 		} else if (err == 'Error: connect EAGAIN') {
+		// 			console.log("Authentication error, trying again: "+params)
+		// 			setTimeout(get_starter_function(i), i*200)
+		// 		} else if ( timeouts[i] == 5 ) {
+		// 			timedoutconnections++;
+		// 			console.log("Sendoff failed: "+params)
+		// 			ports[i].TIMEDOUT = true
+		// 			console.log("Too many timeouts on: "+params )
+		// 		} else {
+		// 			console.log("ERROR: "+err)
+		// 		}
+		// 	}).pipe(process.stdout)
+		// 	check_network(i)
+	 // }
 }
 
 

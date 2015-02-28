@@ -9,6 +9,6 @@ var fs = require('fs'),
 var child = spawn('node', ['kautz-graph-overlay/kautz-node.js', process.argv[3]], {
 	detached: true,
 	stdio: [ 'ignore', out, err ]
-});
+})
 
- child.unref();
+ child.unref()
