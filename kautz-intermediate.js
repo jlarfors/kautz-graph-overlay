@@ -5,7 +5,7 @@ var fs = require('fs'),
 
 if (process.argv.length < 3) console.log("Not enough parameters given.")
 
-var child = spawn('node', ['~/kautz-graph-overlay/kautz-node.js', process.argv[2]], {
+var child = spawn('node', ['kautz-graph-overlay/kautz-node.js', process.argv[2]], {
 	detached: true,
 	stdio: [ 'ignore', out, err ]
 });
