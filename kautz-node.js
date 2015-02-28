@@ -1,7 +1,7 @@
 var net = require('net')
 var fs = require('fs')
-var outFile = fs.openSync('./out.log', 'a')
-var errFile = fs.openSync('./err.log', 'a')
+var outFile = fs.open('./out.log', 'a')
+var errFile = fs.open('./err.log', 'a')
 
 if (process.argv.length < 3) {
 	logger("Not enought parameters given.")
