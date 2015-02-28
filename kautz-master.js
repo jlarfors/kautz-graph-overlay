@@ -124,7 +124,7 @@ function get_starter_function(i) {
 		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+params, username+'@'+own.host)
+		exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+i+' '+params, username+'@'+own.host)
 			.on('error', function(err){
 				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
