@@ -2,7 +2,6 @@ var kautz_generator = require('./kautz-permutations.js')
 var getOutNeighbours = require('./kautz-neighbours.js')
 var route = require('./fission-route.js')
 var net = require('net')
-var spawn = require('child_process').spawn
 var async = require('async')
 var fs = require('fs')
 var exec = require('ssh-exec')
@@ -125,7 +124,7 @@ function get_starter_function(i) {
 		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		exec('node ~/kautz-graph-overlay/kautz-node.js '+params, username+'@'+own.host)
+		exec('node ~/kautz-graph-overlay/kautz-intermediate.js '+params, username+'@'+own.host)
 			.on('error', function(err){
 				if ( err == 'Error: Timed out while waiting for handshake' && timeouts[i] < 5 ) {
 					timeouts[i]++
@@ -147,7 +146,7 @@ function get_starter_function(i) {
 function check_network(i) {
 	if (i == identifiers.length-1)
 		console.log(ports, "Network is up!")
-	
+
 	if (timedoutconnections>0) console.log("All nodes could not be initialised! Check the host listing\
 		for missing clients, you may be able to set them up manually. Count: "+timedoutconnections)
 }
