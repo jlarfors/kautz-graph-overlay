@@ -43,27 +43,49 @@ var exit_status = 0
 // try to protect against other processes communicating with the node.
 var server = net.createServer(function(connection) {
 	connection.on('data', function(data_in) {
-		if (data_in.toString('ascii', 0, data_in.length-2) == 'STOP') sendExit()
-		var data = JSON.parse(data_in)
-		if (data == undefined) logger("Erroneous data: "+data_in)
-		else if (data.destination == own_id) {
-			console.log("Reached destination "+data)
-		} else {
-			react(data)
-		}
+			dataString = data_in.toString('ascii', 0, data_in.length-2)
+
+			if (dataString == 'STOP') 
+				sendExit()
+
+			try {
+				var data = JSON.parse(dataString)
+			} catch (e) { }
+
+			if (data){
+				if (data.destination == own_id) {
+					connection.write("\nMy ID!\n")
+					console.log("Reached destination "+JSON.stringify(data))
+				} else if (data.destination){
+					connection.write("\nAttempting send\n")
+					console.log("Recieved message: "+JSON.stringify(data))
+					
+					react(data, function(message) {
+						connection.write(message+'\n')
+					})
+				} else {
+					connection.write("Unknown data: "+dataString+'\n')
+				}
+			} else {
+				connection.write("Unknown data: "+dataString+'\n')
+			}
+
+	}).on('error', function(err) {
+		console.error(err)
 	})
 })
 
 
 // at this point just throw an error, this is not a very robust server.
 server.on('error', function(err) {
-	throw err
+	console.error(err)
+	process.exit(1)
 })
 server.listen(own_port)
 
 
 // react to some incoming data. mainly provide the actual routing for the message.
-function react(data) {
+function react(data, callback) {
 	var destination = data.destination
 	var port
 	var host
@@ -82,22 +104,23 @@ function react(data) {
 	var X1 = postfix(out_1_id, own_id.length-1)
 	var X2 = postfix(out_2_id, own_id.length-1)
 
-	if (X1 != null && isPrefix(S+X1, destination)) {
+	if (X1 != null && isPrefix(data.S+X1, destination)) {
 		data.L--
 		data.S+=X1
 		host = out_1_host
 		port = out_1_port
-	} else if (X2 != null && isPrefix(S+X2, destination)) {
+	} else if (X2 != null && isPrefix(data.S+X2, destination)) {
 		data.L--
 		data.S+=X2
 		host = out_2_host
 		port = out_2_port
 	} else {
-		console.log("Destination unreachable: dead path "+data)
+		console.log("Destination unreachable: dead path "+JSON.stringify(data))
+		callback({code:"EUNREACHABLE", message:"Destination unreachable: dead path"})
 		return
 	}
 	data.pathLength++
-	sendMsg(data, host, port)
+	sendMsg(data, host, port, callback)
 }
 
 
@@ -117,12 +140,15 @@ function isPrefix(X, V) {
 
 
 // Send some data over to the next node that was chosen by the routing algorithm
-function sendMsg(data, host, port) {
+function sendMsg(data, host, port, callback) {
 	var client = net.connect({host:host, port:port}, function() {
 		client.write(JSON.stringify(data))
 		client.end()
-	}).on('error', function() { 
-		console.error("Unable to send event to "+host+":"+port+", with data: "+data)
+		callback("Sent successfully")
+	}).on('error', function(err) {
+		err.message = "Unable to send event to "+host+":"+port+", with data: "+JSON.stringify(data)
+		console.error(err)
+		callback(err)
 	})
 }
 
@@ -132,21 +158,22 @@ function sendMsg(data, host, port) {
 // inside the kautz-graph. The formality of this algorithm should be checked!
 function sendExit() {
 	var client1 = net.connect({host:out_1_host, port:out_1_port}, function() {
-		client.write('End')
+		client.write('STOP')
 		client.end()
 		exit_status++
 		setTimeout(end, 5000)
-	}).on('error', function() {
+	}).on('error', function(err) {
 		console.log("Unable to end session on "+out_1_host+""+err)
+		process.exit(1)
 	})
-	var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
-		client.write('End')
-		client.end()
-		exit_status++
-		setTimeout(end, 5000)
-	}).on('error', function() {
-		console.log("Unable to end session on "+out_2_host+""+err)
-	})
+	// var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
+	// 	client.write('End')
+	// 	client.end()
+	// 	exit_status++
+	// 	setTimeout(end, 5000)
+	// }).on('error', function() {
+	// 	console.log("Unable to end session on "+out_2_host+""+err)
+	// })
 }
 
 

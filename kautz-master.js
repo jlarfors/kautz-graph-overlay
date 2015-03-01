@@ -105,9 +105,9 @@ function assignIdentifiers() {
 	}
 	async.eachLimit(range, 50, function(i, callback){
 		intermediateSendoff(i, callback)
-	} function() {
-		console.log(ports, "Network is up! Connect to any node via telnet.")
-	})
+	}) 
+
+	console.log(ports, "Network is almost up! Connect to any node via telnet in a minute!")
 }
 
 
@@ -123,14 +123,16 @@ function intermediateSendoff(i, callback) {
 		var params = "'"+JSON.stringify(own)+"'"
 		var username = process.env.USER
 
-		var child = spawn('ssh', [host, 'node', 'kautz-graph-overlay/kautz-intermediate.js', i, params])
+		var child = spawn('ssh', [own.host, 'node', 'kautz-graph-overlay/kautz-intermediate.js', i, params])
 		child.on('error', function(err){console.log("child error: "+i+err)})
 		child.on('close', function(code, signal) { callback() })
-		child.stdout.on('data', function(data){console.log(data.toString())})
-		child.stderr.on('data', function(data){console.error(data.toString())})
+		child.stdout.on('data', function(data){
+			console.log("Child: "+" "+data.toString())
+		})
+		child.stderr.on('data', function(data){
+			console.error(data.toString())
+		})
 }
-
-
 
 
 
