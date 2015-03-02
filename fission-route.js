@@ -1,13 +1,24 @@
+// Authors: Frans Ojala (013865821) Jackob Lärfors ()
+
+// Provides the routing algorithm for the kautz-simulator.js.
+
+// Returns the postfix of a given identifier, of given length.
  function postfix(string, k) {
  	if (!string) return null
  	return string.slice(k, string.length)
  }
 
+// Checks if a given prefix of a given destination node (V) is matched by a route
+// built prefix (X). Both V and X are kautz-identifiers.
  function isPrefix(X, V) {
  	var prefix = V.slice(0, X.length)
  	return prefix == X
  }
 
+// provides the actual routing from node src to node dst. Takes in
+// src, dst as kautz-identifiers, nodes as the set of available node identifiers in an array
+// out_1 and out_2 as arrays that describe the indexes for each out-neighbour of a given
+// identifier in the node identifier array, respectively
  function route(src, dst, nodes, out_1, out_2){
 
 	var node = src

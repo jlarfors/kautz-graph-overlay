@@ -1,3 +1,5 @@
+// Authors: Frans Ojala (013865821)
+
 var kautz_generator = require('./kautz-permutations.js')
 var getOutNeighbours = require('./kautz-neighbours.js')
 var route = require('./fission-route.js')
@@ -6,6 +8,7 @@ var async = require('async')
 var fs = require('fs')
 var spawn = require('child_process').spawn
 
+// Don't try to start with too little information, also log
 if (process.argv.length < 6) {
 	console.log("Usage: node kautz-master.js <base port> <degree> <k-length> <host1> ... <hostN>\n\
 		where base port is in the dynamic range over 51000, degree is preferably 2 (higher orders not supported yet)\n\
@@ -16,26 +19,23 @@ if (process.argv.length < 6) {
 }
 
 
-// this version will make the entire simulation into one host starting from the given port
-// one could hardcode these, but this option is given to provide a little more flexibility
-// in choosing the starting points. For example one could still accept incoming connections
-// from a 'non-local' ip address assignes to the given host, and one could have the node
-// processes assigned port numbers from the lower ranges, although none of this is recommended
-// var ip = process.argv[2]
+// This version is built to be launched on several nodes in the Ukko-cluster. The nodes
+// need to be provided as the last argument in the starting of the kautz-master.
 var base_port = parseInt(process.argv[2])
 var degree = parseInt(process.argv[3])
 var k_length = parseInt(process.argv[4])
 var hosts = process.argv.slice(5, process.argv.length)
 
 
-// change these according to your preferences but remember to change the original base as well
+// change these according to your preferences but remember to change the origin_base as well accordingly
 var hash_algo = 'sha256'
 var digest_type = 'hex'
 var origin_base = 16
 
 
 // this version uses the generation of the entire kautz-space and assignment thereof
-// the implementation is not valid for arbitrary k-length kautz-strings (identifiers)
+// the implementation is valid for arbitrary k-length kautz-strings (identifiers), but a length
+// of 10 should be used.
 var identifiers = kautz_generator(degree, k_length, hash_algo, digest_type, origin_base)
 identifiers.sort()
 
@@ -56,16 +56,11 @@ for (var i=0; i < identifiers.length; i++ ) {
 
 
 // get required ports, and execute the slave nodes
+// do it for all the identifiers at this point
 var port_incrementor = 0
 var ports = []
-var timeouts = []
-var timedoutconnections = 0
 var domain = ".hpc.cs.helsinki.fi"
-
-
-// do it for all the identifiers at this point
 for (var i = 0;i < identifiers.length; i++) {
-	timeouts[i] = 0
 	var host = hosts[i%hosts.length]+domain
 	getPort(host, base_port+port_incrementor, saveAddress)
 	port_incrementor++
@@ -101,7 +96,7 @@ function saveAddress(error, address) {
 
 
 // have a range array for the indexes. in a limited fashion send at most
-// 50 intermediates, so as not to overload the ssh daemon at an ukkonode.
+// 100 intermediates, so as not to overload the ssh daemon at an ukkonode.
 var range = []
 function assignIdentifiers() {
 	for (var i = 0; i < identifiers.length; i++) {
@@ -119,6 +114,7 @@ function assignIdentifiers() {
 }
 
 
+// Build a configuration for the kautz-node that the intermediate will spawn
 // Send off the intermediate process via regular ssh child process spawning
 function intermediateSendoff(i, callback) {
 		var ownS = JSON.stringify(ports[i])

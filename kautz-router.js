@@ -1,3 +1,7 @@
+// Authors: Frans Ojala (013865821) Jacok Lärfors ()
+
+// DEPRECATED
+
 // The routing algorithm that is modeled after longest postfix-prefix matching
 // just for testing purposes to determine if the resulting network is viable
 function route(src, dst, arr, out_neighbour_1, out_neighbour_2) {

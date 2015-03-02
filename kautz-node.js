@@ -1,6 +1,10 @@
+// Authors: Frans Ojala (013865821)
+
 var net = require('net')
 var fs = require('fs')
 
+
+// Don't try to start on too little information
 if (process.argv.length < 3) {
 	console.log("Not enought parameters given.")
 	process.exit()
@@ -24,6 +28,8 @@ if (!config || !config.id || !config.host || !config.port || !config.out1 || !co
 }
 
 
+// The routing tables, actually the own_ part is not a part of it. This is also not a dynamic
+// solution ^____^
 var own_id = config.id
 var own_host = config.host
 var own_port = config.port

@@ -21,7 +21,7 @@ Choose some (preferably four) Ukko-nodes to host the nodes. Make sure you can lo
 	$> ssh-add
 
 # Setting up the network
-To set up the network enter the directory to which the aforementioned files were extracted and to which anyc and anybase were installed. Then start the network by starting the kautz-master.js, for example:
+To set up the network enter the directory to which the aforementioned files were extracted and to which async and anybase were installed. Then start the network by starting the kautz-master.js, for example:
 
 	$> node kautz-master.js 51000 2 10 ukko144 ukko141 ukko014 ukko110
 

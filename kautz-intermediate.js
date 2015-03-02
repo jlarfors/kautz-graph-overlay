@@ -1,4 +1,6 @@
+// Authors: Frans Ojala (013865821)
 
+// Don't try to start with too little information
 if (process.argv.length < 4) console.log("Not enough parameters given.")
 
 var prefix = ""
@@ -19,21 +21,18 @@ if (number < 10) prefix+="000"
 else if (number<100) prefix+="00"
 else if (number<1000) prefix+="0"
 
-// give the kautz-nodes a file for logging.
-
+// give the kautz-nodes a file and directory for logging.
 fs.mkdir(path, function(err){
 	if (err == 'EEXIST') {
-		//do nothing
+		//do nothing just protection
 	}
 })
-
 var out = fs.openSync(path+'/out.'+prefix+number+'.'+config.id+'.'+config.host+'.'+config.port, 'a')
 var err = fs.openSync(path+'/err.'+prefix+number+'.'+config.id+'.'+config.host+'.'+config.port, 'a')
 
-// spawn it and detach
+// spawn a kautz-node.js, detach it and exit.
 var child = spawn('node', ['kautz-graph-overlay/kautz-node.js', process.argv[3]], {
 	detached: true,
 	stdio: [ 'ignore', out, err ]
 })
-
- child.unref()
+child.unref()

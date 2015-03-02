@@ -1,13 +1,19 @@
+// Authors: Frans Ojala (013865821)
+
 var crypto = require('crypto')
 var base = require('anybase')
 
+
+// will provide the permutations of the given kautz-space, DOES NOT work with every combination
+// User is advised to stick to kautz-alphabet 2, but higher order kautz-string lengths are supported
+// to some extent.
 function kautz_perms(degree, k_length, hash_algo, digest_type, origin_base) {
+	
 	var key_count = Math.pow(degree, k_length) + Math.pow(degree, k_length-1)
-
 	var strings = []
-
 	var string_index = 0
 	var input = 0
+
 	while (strings.length < key_count) {
 		var hash = crypto.createHash(hash_algo).update(input+"").digest(digest_type).toUpperCase()
 		var tern = base(degree+1, hash, origin_base)

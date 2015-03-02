@@ -1,7 +1,10 @@
+// Authors: Frans Ojala (013865821)
+
 var crypto = require('crypto')
 var base = require('anybase')
 
-// generate kautz-hashes according to the pseudocode algo presented in FISSIONE
+// generate kautz-hashes according to the pseudocode algo presented in FISSIONE using
+// ip and port as key. This implementation can produce kautz-strings for any kautz-space.
 function to_kautz_string(ip, port, out_length, degree, digit, hash_algo, digest_type) {
 	var merge_p = 0
 	var target_base = parseInt(degree)+1
