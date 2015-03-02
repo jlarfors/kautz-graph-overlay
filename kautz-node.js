@@ -60,11 +60,9 @@ var server = net.createServer(function(connection) {
 						console.log("Reached destination "+JSON.stringify(data))
 					} else if (data.destination){
 						connection.write("\nAttempting send\n")
+						react(data)
 						console.log("Recieved message: "+JSON.stringify(data))
 						
-						react(data, function(message) {
-							// connection.write(message+'\n')
-						})
 					} else {
 						connection.write("Unknown data object: "+dataString+'\n')
 					}
@@ -89,7 +87,7 @@ server.listen(own_port)
 
 
 // react to some incoming data. mainly provide the actual routing for the message.
-function react(data, callback) {
+function react(data) {
 	var destination = data.destination
 	var port
 	var host
@@ -124,11 +122,11 @@ function react(data, callback) {
 		port = out_2_port
 	} else {
 		console.log("Destination unreachable: dead path "+JSON.stringify(data))
-		callback({code:"EUNREACHABLE", message:"Destination unreachable: dead path"})
+		// callback({code:"EUNREACHABLE", message:"Destination unreachable: dead path"})
 		return
 	}
 	data.pathLength++
-	sendMsg(data, host, port, callback)
+	sendMsg(data, host, port)
 }
 
 
@@ -148,15 +146,15 @@ function isPrefix(X, V) {
 
 
 // Send some data over to the next node that was chosen by the routing algorithm
-function sendMsg(data, host, port, callback) {
+function sendMsg(data, host, port) {
 	var client = net.connect({host:host, port:port}, function() {
 		client.write(JSON.stringify(data))
 		client.end()
-		callback("SUCCESS")
+		// callback("SUCCESS")
 	}).on('error', function(err) {
 		err.node_message = "Unable to send event to "+host+":"+port+", with data: "+JSON.stringify(data)
 		console.error(err)
-		callback(err)
+		// callback(err)
 	})
 	// client.on('data', function(msg) {
 	// 	if (msg.toString() != 'SUCCESS') {
