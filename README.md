@@ -17,12 +17,12 @@ Make sure you have npm packages async and anybase installed:
 
 Choose some (preferably four) Ukko-nodes to host the nodes. Make sure you can log into the nodes without having to type your password, i.e. you must have valid priv/pub keypair access from origin host to the cluster AND an ssh-agent running with the identity added:
 
-
 	$> ssh-agent bash
 	$> ssh-add
 
 # Setting up the network
 To set up the network enter the directory to which the aforementioned files were extracted and to which anyc and anybase were installed. Then start the network by starting the kautz-master.js, for example:
+
 	$> node kautz-master.js 51000 2 10 ukko144 ukko141 ukko014 ukko110
 
 The network of K(2, 10) containing 1536 kautz-nodes is set up and a listing of nodes and their respective kautz-identifiers, hosts and ports is printed. After a while the master exits and the network is guaranteed to be up. If there were error messages the network naturally wasn't fully set up and you should check the availability of connections on the cluster, the availability of the hosts and the number of processes available to forking. Before trying again make sure you follow the instructions in 'Shutdown' to shutdown the incomplete network.
