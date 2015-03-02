@@ -45,8 +45,11 @@ var server = net.createServer(function(connection) {
 	connection.on('data', function(data_in) {
 			dataString = data_in.toString('ascii', 0, data_in.length-2)
 
-			if (dataString == 'STOP') {
-				sendExit()
+			if (dataString == 'STOP' || data_in.toString() =='STOP') {
+
+				// NOT IN USE
+				// connection.write('STOPPING')
+				// if (exit_status == 0) sendExit()
 			} else {
 				try {
 					var data = JSON.parse(data_in)
@@ -54,7 +57,6 @@ var server = net.createServer(function(connection) {
 
 				if (data){
 					if (data.destination == own_id) {
-						connection.write("\nMy ID!\n")
 						console.log("Reached destination "+JSON.stringify(data))
 					} else if (data.destination){
 						connection.write("\nAttempting send\n")
@@ -100,12 +102,13 @@ function react(data, callback) {
 			data.S = ""
 			data.L = own_id.length
 		}
+		data.path = []
 		data.path.push(own_id)
 		data.pathLength = -1
 	} else {
 		data.path.push(own_id)
 	}
-	
+
 	var X1 = postfix(out_1_id, own_id.length-1)
 	var X2 = postfix(out_2_id, own_id.length-1)
 
@@ -148,53 +151,59 @@ function isPrefix(X, V) {
 function sendMsg(data, host, port, callback) {
 	var client = net.connect({host:host, port:port}, function() {
 		client.write(JSON.stringify(data))
-		// client.end()
+		client.end()
 		callback("SUCCESS")
 	}).on('error', function(err) {
 		err.node_message = "Unable to send event to "+host+":"+port+", with data: "+JSON.stringify(data)
 		console.error(err)
 		callback(err)
-	}).on('data', function(msg) {
-		if (msg.toString() != 'SUCCESS') {
-			console.error("Unable to send data: "+JSON.stringify(data)+" "+msg)
-		}
-		client.end()
 	})
-}
-
-
-// This tries to provide an interface to more easily enable the shutdown
-// of the entire network. It's based on the Hamiltonian path that is formed
-// inside the kautz-graph. The formality of this algorithm should be checked!
-function sendExit() {
-	var client1 = net.connect({host:out_1_host, port:out_1_port}, function() {
-		client.write('STOP')
-		console.log("STOPPING")
-		client.end()
-		exit_status++
-		setTimeout(end, 5000)
-	}).on('error', function(err) {
-		console.log("Unable to end session on "+out_1_host+" "+err)
-		process.exit(1)
-	})
-	// var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
-	// 	client.write('End')
+	// client.on('data', function(msg) {
+	// 	if (msg.toString() != 'SUCCESS') {
+	// 		console.error("Unable to send data: "+JSON.stringify(data)+" "+msg)
+	// 	}
 	// 	client.end()
-	// 	exit_status++
-	// 	setTimeout(end, 5000)
-	// }).on('error', function() {
-	// 	console.log("Unable to end session on "+out_2_host+""+err)
 	// })
 }
 
+// STOPPING FUNCTION NOT IN USE
+// // This tries to provide an interface to more easily enable the shutdown
+// // of the entire network. It's based on the Hamiltonian path that is formed
+// // inside the kautz-graph. The formality of this algorithm should be checked!
+// function sendExit() {
+// 	var client1 = net.connect({host:out_1_host, port:out_1_port}, function() {
+// 		client1.write('STOP')
+// 		client1.end()
+// 		exit_status++
+// 		setTimeout(end, 60000)
+// 	}).on('error', function(err) {
+// 		if (err.code != 'ECONNREFUSED') {
+// 	 		console.log("Error stopping "+out_1_host+" "+out_1_port+" "+err)
+// 		}
+// 		setTimeout(end, 60000)
+// 	})
+// 	var client2 = net.connect({host: out_2_host, port:out_2_port}, function() {
+// 		client2.write('STOP')
+// 		client2.end()
+// 		exit_status++
+// 		setTimeout(end, 60000)
+// 	}).on('error', function(err) {
+// 		if (err.code != 'ECONNREFUSED') {
+// 			console.log("Error stopping "+out_2_host+" "+out_2_port+" "+err)
+// 		}
+// 		setTimeout(end, 60000)
+// 	})
+// }
 
-// if we are able to quit after sending the exit signal to the next node.
-function end() {
-	if (exit_status==1) {
-		server.close()
-		process.exit()
-	}
-}
+
+// // if we are able to quit after sending the exit signal to the next node.
+// function end() {
+// 	if (exit_status>0) {
+// 		console.log('STOPPING')
+// 		server.close()
+// 		process.exit()
+// 	}
+// }
 
 
 

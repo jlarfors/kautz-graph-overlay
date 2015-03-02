@@ -7,7 +7,11 @@ var fs = require('fs')
 var spawn = require('child_process').spawn
 
 if (process.argv.length < 6) {
-	console.log("Usage: node kautz-master.js <base port> <degree> <k-length> <host1> ... <hostN>")
+	console.log("Usage: node kautz-master.js <base port> <degree> <k-length> <host1> ... <hostN>\n\
+		where base port is in the dynamic range over 51000, degree is preferably 2 (higher orders not supported yet)\n\
+		k-length should be 10, to achieve 1536 nodes, and each host must be of the form ukkoXXX. Make sure\n\
+		to test that you can use the node, as sometimes a node is reserverd but still shows up as a free node.\n\
+		You are advised to use at least 4 ukko nodes for this network so as to not overload an ukko node.")
 	process.exit(1)
 }
 
@@ -108,7 +112,10 @@ function assignIdentifiers() {
 		intermediateSendoff(i, callback)
 	}) 
 
-	console.log(ports, "Network is almost up! Connect to any node via telnet in a minute!")
+	ports.forEach(function(item) {
+		console.log(JSON.stringify(item))
+	})
+	console.log("Network is almost up! Connect to any node via telnet in a minute!")
 }
 
 
