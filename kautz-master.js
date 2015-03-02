@@ -56,12 +56,13 @@ var port_incrementor = 0
 var ports = []
 var timeouts = []
 var timedoutconnections = 0
+var domain = ".hpc.cs.helsinki.fi"
 
 
 // do it for all the identifiers at this point
 for (var i = 0;i < identifiers.length; i++) {
 	timeouts[i] = 0
-	var host = hosts[i%hosts.length]
+	var host = hosts[i%hosts.length]+domain
 	getPort(host, base_port+port_incrementor, saveAddress)
 	port_incrementor++
 }
@@ -103,7 +104,7 @@ function assignIdentifiers() {
 		ports[i].id = identifiers[i]
 		range.push(i)
 	}
-	async.eachLimit(range, 50, function(i, callback){
+	async.eachLimit(range, 100, function(i, callback){
 		intermediateSendoff(i, callback)
 	}) 
 
