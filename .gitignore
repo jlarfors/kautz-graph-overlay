@@ -2,3 +2,4 @@ err*
 out*
 log*
 node_*
+.DS*
