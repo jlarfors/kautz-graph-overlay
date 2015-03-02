@@ -6,18 +6,14 @@ This version was built to acomodate setup to the University of Helsinki Computer
 # Usage
 In preparation to set up a kautz-overlay on the Ukko cluster make sure you have extracted the proper files:
 
-	```
 	kautz-master.js
 	kautz-node.js
 	kautz-intermediate.js
-	```
 
 Make sure you have npm packages async and anybase installed:
 
-	```
 	$> npm install async
 	$> npm install anybase
-	```
 
 Choose some (preferably four) Ukko-nodes to host the nodes. Make sure you can log into the nodes without having to type your password, i.e. you must have valid priv/pub keypair access from origin host to the cluster AND an ssh-agent running with the identity added:
 
