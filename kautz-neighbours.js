@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821)
+// Author: Frans Ojala (013865821)
 
 // returns an array containing the out-neighbours of the given element using longest postfix-matching
 // additionally counts the in-neighbours for each match, for statistics

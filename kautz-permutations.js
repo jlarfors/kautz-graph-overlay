@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821)
+// Author: Frans Ojala (013865821)
 
 var crypto = require('crypto')
 var base = require('anybase')

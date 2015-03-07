@@ -1,17 +1,17 @@
-// Authors: Frans Ojala (013865821)
+// Author: Frans Ojala (013865821)
 
 var kautz_generator = require('./kautz-permutations.js')
 var kautz_string = require('./kautz-string.js')
 var getOutNeighbours = require('./kautz-neighbours.js')
-// var route = require('./kautz-router.js')
-var route = require('./fission-route.js')
+var route = require('./kautz-router.js')
+// var route = require('./fission-route.js')
 
 
 // take in enough parameters
 if (process.argv.length < 7) {
 	console.log("Usage: <ip> <port> <length> <degree> <digit> <key-count>")
 	process.exit()
-} 
+}
 
 
 // set the variables needed in the generating of kautz-hashes
@@ -24,10 +24,7 @@ var key_count = parseInt(process.argv[7])
 var hash_algo = 'sha1'
 var digest_type = 'hex'
 var origin_base = 16
-
-
-// collect the kautz-hashes into this array
-var arr = []
+var arr = []	// array for the identifiers
 
 
 // use this method for individual strings or the one below for entire k-space permutations
@@ -39,23 +36,21 @@ var arr = []
 // }
 
 
+// use with keyspace generation
 arr = kautz_generator(degree, out_length, hash_algo, digest_type, origin_base)
 key_count = Math.pow(degree, out_length) + Math.pow(degree, out_length-1)
-
-
-// get some statistics on the collisions to evaluate need for tweaks
-var collision_count = 0
 
 
 // sort the array for nicer representation (only needed for collision detection)
 arr.sort()
 
-
 // use with permutation generation, this is modeled to 1024 keys
-// for (i = 0;i<arr.length;i++) {
-// 	if (i%3==0 || i%4==0) arr.splice(i, 1)
-// }
+for (i = 0;i<arr.length;i++) {
+	if (i%3==0 || i%4==0) arr.splice(i, 1)
+}
 
+// get some statistics on the collisions to evaluate need for tweaks
+var collision_count = 0
 
 key_count = arr.length
 
@@ -114,13 +109,13 @@ console.log(cutoff_statistic[0]+" "+cutoff_statistic[1]+" "+cutoff_statistic[2]
 
 
 // and the statistics
+console.log("Collisions: "+collision_count)
 console.log("Total routes (edges): "+total_routes)
 console.log("Total items (nodes): "+arr.length)
 console.log("No routes to: "+no_in_count)
 console.log("A single route to: "+sinlge_in_count)
 console.log("No route out from: "+no_out_count)
 console.log("A single route out from: "+single_out_count)
-console.log("Collisions: "+collision_count)
 
 
 // variables needed to keep track of routes and statistics

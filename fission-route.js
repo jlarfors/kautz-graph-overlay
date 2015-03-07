@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821) Jackob Lärfors ()
+// Author: Frans Ojala (013865821)
 
 // Provides the routing algorithm for the kautz-simulator.js.
 

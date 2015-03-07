@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821)
+// Author: Frans Ojala (013865821)
 
 var kautz_generator = require('./kautz-permutations.js')
 var getOutNeighbours = require('./kautz-neighbours.js')

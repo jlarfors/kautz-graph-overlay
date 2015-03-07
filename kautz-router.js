@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821) Jacok Lärfors ()
+// Author: Frans Ojala (013865821) Jacok Lärfors ()
 
 // DEPRECATED
 

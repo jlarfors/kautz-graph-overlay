@@ -1,4 +1,4 @@
-// Authors: Frans Ojala (013865821)
+// Author: Frans Ojala (013865821)
 
 // Don't try to start with too little information
 if (process.argv.length < 4) console.log("Not enough parameters given.")
